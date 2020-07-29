@@ -1,0 +1,21 @@
+body{
+    background-image: url('../images/login.PNG');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+
+.formulario{
+    background-color: white;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.btnregistro a{
+    color: #ffff
+}
+img{
+    padding-top: 10px;
+}
+
+

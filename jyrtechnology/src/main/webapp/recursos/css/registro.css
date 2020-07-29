@@ -1,0 +1,65 @@
+body{
+    background-image: url('../images/login.PNG');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+
+.formulario{
+    background-color: white;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.btnregistro a{
+    color: #ffff;
+}
+
+.campo{
+    position: relative;
+}
+
+
+.campo.success input{
+    border-color: #2ecc71;
+}
+.campo.error input{
+    border-color: #e74c3c;
+}
+
+.campo i{
+    visibility: hidden;
+    position: absolute;
+    top: 8px;
+    right: 0;
+    padding-right: 10px;
+    padding-top: 4px;
+
+}
+
+.campo.success i.fa-check-circle{
+    color: #2ecc71;
+    visibility: visible;
+}
+
+.campo.error i.fa-exclamation-circle{
+    color: #e74c3c;
+    visibility: visible;
+}
+
+.campo small{
+    color: #e74c3c;
+    position: absolute;
+    visibility: hidden;
+    top:40px;
+    left: 0;
+    font-size: 13px;
+}
+
+.campo.error small{
+    visibility: visible;
+}
+
+
+
+
+
