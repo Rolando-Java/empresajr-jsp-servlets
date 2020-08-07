@@ -6,7 +6,10 @@ public enum PaginaJSP {
     SESION("sesion.jsp"),
     REGISTRO("registro.jsp"),
     LISTADO_PEDIDOS("listadodepedidos.jsp"),
-    SOLICITUD_PEDIDOS("solicituddepedidos.jsp");
+    SOLICITUD_PEDIDOS("solicituddepedidos.jsp"),
+    REGISTRAR_FICHATECNICA("registrodefichatecnica.jsp"),
+    REGISTRAR_PEDIDO("registrodepedido.jsp"),
+    SEGUIMIENTO_PEDIDO("seguimientodepedidos.jsp");
 
     private final String pagina;
 

@@ -9,6 +9,10 @@ public class FichaTecnicaEtiqueta {
 
     }
 
+    public FichaTecnicaEtiqueta(Etiqueta etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+
     public int getIdFichaTecnicaEtiqueta() {
         return idFichaTecnicaEtiqueta;
     }

@@ -13,6 +13,12 @@ public class DetallePedido {
         
     }
 
+    public DetallePedido(Prenda prenda, BigDecimal subTotal, int cantidadPrendas) {
+        this.prenda = prenda;
+        this.subTotal = subTotal;
+        this.cantidadPrendas = cantidadPrendas;
+    }
+
     public int getIdDetallePedido() {
         return idDetallePedido;
     }

@@ -3,7 +3,9 @@ package constantes;
 public enum TipoUsuario {
     
     CLIENTE("cliente"),
-    ADMINISTRADOR("administrador");
+    ADMINISTRADOR("administrador"),
+    JEFE_PRODUCCION("jefeproduccion"),
+    JEFE_ALMACEN("jefealmacen");
     
     private final String tipo;
     

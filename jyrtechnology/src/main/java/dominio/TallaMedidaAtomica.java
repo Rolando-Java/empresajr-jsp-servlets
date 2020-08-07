@@ -1,15 +1,18 @@
 package dominio;
 
-import java.math.BigDecimal;
-
 public class TallaMedidaAtomica {
 
     private int idTallaMedidaAtomica;
     private MedidaAtomica medidaAtomica;
-    private BigDecimal medida;
+    private String medida;
 
     public TallaMedidaAtomica() {
 
+    }
+
+    public TallaMedidaAtomica(MedidaAtomica medidaAtomica, String medida) {
+        this.medidaAtomica = medidaAtomica;
+        this.medida = medida;
     }
 
     public int getIdTallaMedidaAtomica() {
@@ -28,11 +31,11 @@ public class TallaMedidaAtomica {
         this.medidaAtomica = medidaAtomica;
     }
 
-    public BigDecimal getMedida() {
+    public String getMedida() {
         return medida;
     }
 
-    public void setMedida(BigDecimal medida) {
+    public void setMedida(String medida) {
         this.medida = medida;
     }
 

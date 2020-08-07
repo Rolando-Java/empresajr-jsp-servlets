@@ -9,6 +9,11 @@ public class MedidaAtomica {
 
     }
 
+    public MedidaAtomica(int idMedidaAtomica, String descripcion) {
+        this.idMedidaAtomica = idMedidaAtomica;
+        this.descripcion = descripcion;
+    }
+
     public int getIdMedidaAtomica() {
         return idMedidaAtomica;
     }

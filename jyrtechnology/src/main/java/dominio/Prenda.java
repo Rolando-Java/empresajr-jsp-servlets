@@ -12,6 +12,12 @@ public class Prenda {
 
     }
 
+    public Prenda(int idPrenda, String tipoPrenda, BigDecimal precioUnitario) {
+        this.idPrenda = idPrenda;
+        this.tipoPrenda = tipoPrenda;
+        this.precioUnitario = precioUnitario;
+    }
+
     public int getIdPrenda() {
         return idPrenda;
     }

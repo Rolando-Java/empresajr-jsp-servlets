@@ -4,9 +4,9 @@
         <select class="browser-default custom-select"
                 onchange="window.location = this.options[this.selectedIndex].value">
             <option selected disabled value=""></option>
-            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidos&estadoPedido=aceptado">Aceptado</option>
-            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidos&estadoPedido=rechazado">Rechazado</option>
-            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidos&estadoPedido=pendiente">Pendiente</option>
+            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidosByUsuario&estadoPedido=aceptado">Aceptado</option>
+            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidosByUsuario&estadoPedido=rechazado">Rechazado</option>
+            <option value="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidosByUsuario&estadoPedido=en espera">En espera</option>
         </select>
     </div>
 </div>

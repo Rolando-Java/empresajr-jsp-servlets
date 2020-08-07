@@ -23,6 +23,16 @@ public class FichaTecnica {
         this.idFichaTecnica = idFichaTecnica;
     }
 
+    public FichaTecnica(String composicion, String color, String disenio, String bordado, String estampado, String tipoCuello, String comentario) {
+        this.composicion = composicion;
+        this.color = color;
+        this.disenio = disenio;
+        this.bordado = bordado;
+        this.estampado = estampado;
+        this.tipoCuello = tipoCuello;
+        this.comentario = comentario;
+    }
+
     public int getIdFichaTecnica() {
         return idFichaTecnica;
     }

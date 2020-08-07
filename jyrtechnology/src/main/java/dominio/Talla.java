@@ -13,6 +13,12 @@ public class Talla {
 
     }
 
+    public Talla(int idTalla, String talla, int cantidad) {
+        this.idTalla = idTalla;
+        this.talla = talla;
+        this.cantidad = cantidad;
+    }
+
     public int getIdTalla() {
         return idTalla;
     }

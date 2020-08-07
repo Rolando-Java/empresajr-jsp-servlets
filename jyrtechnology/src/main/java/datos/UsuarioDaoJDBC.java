@@ -1,30 +1,40 @@
 package datos;
 
-import constantes.MensajeError;
 import constantes.TipoImagen;
 import dominio.Correo;
 import dominio.Usuario;
-import excepciones.CorreoException;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.Conexion;
 import util.EmailGenerator;
 
 public class UsuarioDaoJDBC implements UsuarioDao {
 
+    private Connection conexionTransaccional;
+    
     private static final String SQL_INSERT_USUARIO = "INSERT INTO usuarios(nom ,apepat ,apemat ,usuario ,contra ,car ,cor ,dir ,emp ,tipusu ,ruc ,dni ,tel ,celular ) "
             + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     private static final String SQL_SELECT_MENSAJERIA_BY_TIPOIMAGEN = "SELECT correoempresa , contrasenia ,url FROM vista_mensajeria WHERE tipoimagen = ?";
-    private static final String SQL_SELECT_USUARIO_BY_USERNAME_PASSWORD = "SELECT idus, cor, tipusu FROM vista_usuario "
+    private static final String SQL_SELECT_USUARIO_BY_USERNAME_PASSWORD = "SELECT idus, cor, tipusu FROM usuarios "
             + "WHERE usuario = ? and contra = ?";
+    private static final String SQL_SELECT_USUARIO_BY_IDUSUARIO = "SELECT nom ,apepat ,apemat ,usuario ,contra ,car ,cor ,dir ,emp ,tipusu ,ruc ,dni ,tel ,celular "
+            + "FROM usuarios WHERE idus = ?";
+            
+    public UsuarioDaoJDBC(){
+        
+    }
+    
+    public UsuarioDaoJDBC(Connection conexionTransaccional){
+        this.conexionTransaccional = conexionTransaccional;
+    }
+    
+    
     @Override
     public void registrarUsuario(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
-            conn = Conexion.getConnection();
+            conn = (conexionTransaccional != null)? this.conexionTransaccional : Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT_USUARIO);
 
             stmt.setString(1, usuario.getNombre());
@@ -53,7 +63,9 @@ public class UsuarioDaoJDBC implements UsuarioDao {
             }
         } finally {
             Conexion.close(stmt);
-            Conexion.close(conn);
+            if(conexionTransaccional == null){
+                Conexion.close(conn);
+            }
         }
     }
 
@@ -64,7 +76,7 @@ public class UsuarioDaoJDBC implements UsuarioDao {
         ResultSet rs = null;
         Correo correo = null;
         try {
-            conn = Conexion.getConnection();
+            conn = (conexionTransaccional != null)? this.conexionTransaccional : Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_MENSAJERIA_BY_TIPOIMAGEN);
             stmt.setString(1, TipoImagen.REGISTRO.getTipo());
             
@@ -99,7 +111,9 @@ public class UsuarioDaoJDBC implements UsuarioDao {
         } finally {
             Conexion.close(rs);
             Conexion.close(stmt);
-            Conexion.close(conn);
+            if(conexionTransaccional == null){
+                Conexion.close(conn);
+            }
         }
         return correo;
     }
@@ -111,7 +125,7 @@ public class UsuarioDaoJDBC implements UsuarioDao {
         ResultSet rs = null;
         Usuario usuario = null;
         try {
-            conn = Conexion.getConnection();
+            conn = (conexionTransaccional != null)? this.conexionTransaccional : Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_USUARIO_BY_USERNAME_PASSWORD);
             stmt.setString(1, username);
             stmt.setString(2, contraseniaHash);
@@ -129,7 +143,52 @@ public class UsuarioDaoJDBC implements UsuarioDao {
         } finally {
             Conexion.close(rs);
             Conexion.close(stmt);
-            Conexion.close(conn);
+            if(conexionTransaccional == null){
+                Conexion.close(conn);
+            }
+        }
+        return usuario;
+    }
+
+    @Override
+    public Usuario listarUsuarios(int idUsuario) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Usuario usuario = null;
+        try{
+            conn = (conexionTransaccional != null)? this.conexionTransaccional : Conexion.getConnection();
+            stmt = conn.prepareStatement(SQL_SELECT_USUARIO_BY_IDUSUARIO);
+            stmt.setInt(1, idUsuario);
+            
+            rs = stmt.executeQuery();
+            if(rs.next()){
+                String nombre = rs.getString("nom");
+                String apellidoPaterno = rs.getString("apepat");
+                String apellidoMaterno = rs.getString("apemat");
+                String username = rs.getString("usuario");
+                String contrasenia = rs.getString("contra");
+                String cargo = rs.getString("car");
+                String correo = rs.getString("cor");
+                String direccion = rs.getString("dir");
+                String empresa = rs.getString("emp");
+                String tipoUsuario = rs.getString("tipusu");
+                String ruc = rs.getString("ruc");
+                String dni = rs.getString("dni");
+                String telefono = rs.getString("tel");
+                String celular = rs.getString("celular");
+                
+                usuario = new Usuario(nombre, apellidoPaterno, apellidoMaterno, username, contrasenia, 
+                        cargo, correo, direccion, empresa, tipoUsuario, ruc, dni, telefono, celular);
+            }
+            
+            
+        }catch(SQLException ex){
+            Conexion.close(rs);
+            Conexion.close(stmt);
+            if(conexionTransaccional == null){
+                Conexion.close(conn);
+            }
         }
         return usuario;
     }

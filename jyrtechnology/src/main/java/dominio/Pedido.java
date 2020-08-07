@@ -14,13 +14,23 @@ public class Pedido {
     private BigDecimal total;
     private List<DetallePedido> detallePedidos;
     private FichaTecnica fichaTecnica;
+    private List<Produccion> producciones;
 
     public Pedido() {
 
     }
 
-    public Pedido(int idPedido, String fecha, String hora, String estado, int cantidadPrendasTotal, BigDecimal total, FichaTecnica fichaTecnica) {
+    public Pedido(String fecha, String hora, int cantidadPrendasTotal, BigDecimal total, List<DetallePedido> detallePedidos) {
+        this.fecha = fecha;
+        this.hora = hora;
+        this.cantidadPrendasTotal = cantidadPrendasTotal;
+        this.total = total;
+        this.detallePedidos = detallePedidos;
+    }
+
+    public Pedido(int idPedido, Usuario usuario, String fecha, String hora, String estado, int cantidadPrendasTotal, BigDecimal total, FichaTecnica fichaTecnica) {
         this.idPedido = idPedido;
+        this.usuario = usuario;
         this.fecha = fecha;
         this.hora = hora;
         this.estado = estado;
@@ -101,9 +111,17 @@ public class Pedido {
         this.fichaTecnica = fichaTecnica;
     }
 
+    public List<Produccion> getProducciones() {
+        return producciones;
+    }
+
+    public void setProducciones(List<Produccion> producciones) {
+        this.producciones = producciones;
+    }
+
     @Override
     public String toString() {
-        return "Pedido{" + "idPedido=" + idPedido + ", usuario=" + usuario + ", fecha=" + fecha + ", hora=" + hora + ", estado=" + estado + ", cantidadPrendasTotal=" + cantidadPrendasTotal + ", total=" + total + ", detallePedidos=" + detallePedidos + ", fichaTecnica=" + fichaTecnica + '}';
+        return "Pedido{" + "idPedido=" + idPedido + ", usuario=" + usuario + ", fecha=" + fecha + ", hora=" + hora + ", estado=" + estado + ", cantidadPrendasTotal=" + cantidadPrendasTotal + ", total=" + total + ", detallePedidos=" + detallePedidos + ", fichaTecnica=" + fichaTecnica + ", producciones=" + producciones + '}';
     }
 
 }

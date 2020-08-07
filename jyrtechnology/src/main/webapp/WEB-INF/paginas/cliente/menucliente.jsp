@@ -17,21 +17,14 @@
 
     <div id="menu-items">
         <div class="item">
-            <a href="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidos">
+            <a href="${pageContext.request.contextPath}/PedidoServlet?accion=listarpedidosByUsuario">
                 <div class="icon"><img src="recursos/images/pedido.png" alt=""></div>
                 <div class="title"><span>Mis pedidos</span></div>
             </a>
         </div>
         <div class="item separator"></div>
         <div class="item">
-            <a href="#">
-                <div class="icon"><img src="recursos/images/seguimiento.png" alt=""></div>
-                <div class="title"><span>Seguimiento del pedido</span></div>
-            </a>
-        </div>
-        <div class="item separator"></div>
-        <div class="item">
-            <a href="#">
+            <a href="${pageContext.request.contextPath}/PedidoServlet?accion=registrarDetallePedido">
                 <div class="icon"><img src="recursos/images/logoCarro.png" alt=""></div>
                 <div class="title"><span>Realizar pedido</span></div>
             </a>

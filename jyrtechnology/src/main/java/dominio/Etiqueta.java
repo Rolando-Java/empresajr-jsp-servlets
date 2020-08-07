@@ -8,6 +8,15 @@ public class Etiqueta {
     public Etiqueta() {
 
     }
+    
+    public Etiqueta(int idEtiqueta){
+        this.idEtiqueta = idEtiqueta;
+    }
+
+    public Etiqueta(int idEtiqueta, String etiqueta) {
+        this.idEtiqueta = idEtiqueta;
+        this.etiqueta = etiqueta;
+    }
 
     public int getIdEtiqueta() {
         return idEtiqueta;

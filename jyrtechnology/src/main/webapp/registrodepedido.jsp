@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Mis pedidos | J&R</title>
+        <title>Realizar pedido | J&R</title>
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
         <!-- Google Fonts -->
@@ -13,23 +13,34 @@
         <!-- Material Design Bootstrap -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.18.0/css/mdb.min.css" rel="stylesheet">
         <script src="recursos/js/script.js"></script>
-        <link rel="stylesheet" href="recursos/css/menu.css">
+        <link rel="stylesheet" href="recursos/css/realizarpedido.css">
         <link rel="icon" href="recursos/images/polo.ico">
+        <script type="text/javascript" src="recursos/js/validacionrealizarpedido.js"></script>
     </head>
     <jsp:include page="WEB-INF/paginas/comunes/mensajeAlert.jsp" />
     <body>
         <jsp:include page="WEB-INF/paginas/cliente/menucliente.jsp" />
-        <div id="pedidos">
+        <div id="nuevopedido">
             <div class="container">
                 <div class="content-center">
-                    <h2>MIS PEDIDOS<i class="far fa-check-square" style="padding-left: 10px;"></i></h2>
-                    <p>Los pedidos que usted ha realizado son los siguientes:</p>
+                    <h2>REALIZAR NUEVO PEDIDO <i class="fas fa-file-signature"></i></h2>
                 </div>
                 <div class="row">
-                    <!-- listar pedidos -->
-                    <jsp:include page="WEB-INF/paginas/cliente/listarpedidos.jsp" />
-                    <!-- filtrar pedidos -->
-                    <jsp:include page="WEB-INF/paginas/cliente/filtrarpedidos.jsp" />
+                    <div class="col-md-8">
+                        <!-- registrar el detalle del pedido -->
+                        <jsp:include page="WEB-INF/paginas/cliente/registrardetallepedido.jsp" />
+                        <!-- listar detalle del pedido -->
+                        <jsp:include page="WEB-INF/paginas/cliente/listardetallepedido.jsp" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <!-- listar el detalle general del pedido -->
+                        <jsp:include page="WEB-INF/paginas/cliente/listardetallepedidogeneral.jsp" />
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- registrar el pedido -->
+                    <jsp:include page="WEB-INF/paginas/cliente/registrarpedido.jsp" />
                 </div>
             </div>
         </div>

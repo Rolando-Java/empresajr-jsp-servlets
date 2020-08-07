@@ -30,10 +30,10 @@
                         </ul>
                         <div>
                             <c:if test="${pedido.fichaTecnica.idFichaTecnica == 0 && pedido.estado.equalsIgnoreCase('aceptado')}">
-                                <a class="btn btn-red btn-block my-0" href="${pageContext.request.contextPath}/PedidoServlet?accion=ingresarficha&idPedido=${pedido.idPedido}">Agregar ficha tecnica</a>
+                                <a class="btn btn-red btn-block my-0" href="${pageContext.request.contextPath}/PedidoServlet?accion=ingresarFichaTecnica&idPedido=${pedido.idPedido}">Agregar ficha tecnica</a>
                             </c:if>
                             <c:if test="${pedido.fichaTecnica.idFichaTecnica > 0}">
-                                <a class="btn btn-green btn-block my-0" href="ingresarfichatecnica.html">Ver seguimiento</a>
+                                <a class="btn btn-green btn-block my-0" href="${pageContext.request.contextPath}/PedidoServlet?accion=verSeguimiento&idPedido=${pedido.idPedido}">Ver seguimiento</a>
                             </c:if>
                         </div> 
                     </div>
