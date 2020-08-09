@@ -17,16 +17,16 @@
 
     <div id="menu-items">
         <div class="item">
-            <a href="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos">
-                <div class="icon"><img src="recursos/images/fecha.png" alt=""></div>
-                <div class="title"><span>Establecer fecha de producción</span></div>
+            <a href="${pageContext.request.contextPath}/AlmacenServlet?accion=listarPedidosTerminados">
+                <div class="icon"><img src="recursos/images/solicitudes.png" alt=""></div>
+                <div class="title"><span>Ingresar productos terminados</span></div>
             </a>
         </div>
         <div class="item separator"></div>
         <div class="item">
-            <a href="${pageContext.request.contextPath}/ProduccionServlet?accion=ingresaravancediario">
-                <div class="icon"><img src="recursos/images/avance.png" alt=""></div>
-                <div class="title"><span>Registrar avance diario</span></div>
+            <a href="${pageContext.request.contextPath}/AlmacenServlet?accion=listarPedidosEnAlmacen">
+                <div class="icon"><img src="recursos/images/fecha.png" alt=""></div>
+                <div class="title"><span>Reporte de almacén</span></div>
             </a>
         </div>
         <div class="item separator"></div>

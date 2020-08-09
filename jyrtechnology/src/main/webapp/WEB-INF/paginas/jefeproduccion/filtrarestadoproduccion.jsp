@@ -8,7 +8,7 @@
                 <option value="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos&estadoProduccion=produccioniniciada">Producción iniciada</option>
                 <option value="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos&estadoProduccion=produccionpausa">Producción en pausa</option>
                 <option value="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos&estadoProduccion=produccionavance">En producción</option>
-                <option value="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos&estadoProduccion=produccionterminada">Producción terminada</option>
+                <option value="${pageContext.request.contextPath}/ProduccionServlet?accion=listarPedidos&estadoProduccion=produccionterminada">Producción concluida</option>
             </select>
         </div>
     </div>

@@ -59,6 +59,8 @@ public class SesionServlet extends HttpServlet {
                                 request.getRequestDispatcher("SolicitudPedidoServlet").forward(request, response);
                             } else if(usuario.getTipoUsuario().equalsIgnoreCase(TipoUsuario.JEFE_PRODUCCION.getTipo())){
                                 request.getRequestDispatcher("ProduccionServlet").forward(request, response);
+                            } else if(usuario.getTipoUsuario().equalsIgnoreCase(TipoUsuario.JEFE_ALMACEN.getTipo())){
+                                request.getRequestDispatcher("AlmacenServlet").forward(request, response);
                             }
                         } else {
                             response.sendRedirect(PaginaJSP.SESION.getPagina());

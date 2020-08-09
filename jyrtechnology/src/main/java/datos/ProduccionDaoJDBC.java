@@ -75,7 +75,7 @@ public class ProduccionDaoJDBC implements ProduccionDao {
     }
 
     @Override
-    public void registrarProduccion(int idPedido, String estado, String fecha) {
+    public void registrarProduccion(int idPedido, String estadoProduccion, String fecha) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -97,18 +97,47 @@ public class ProduccionDaoJDBC implements ProduccionDao {
             if (cantidadAvance != 0) {
                 stmt = conn.prepareStatement(SQL_INSERT_PRODUCCION_CANTIDADAVANZADA);
                 stmt.setInt(1, idPedido);
-                stmt.setString(2, estado);
+                stmt.setString(2, estadoProduccion);
                 stmt.setString(3, fecha);
                 stmt.setInt(4, cantidadAvance);
             } else {
                 //se registra la produccion inicial del pedido
                 stmt = conn.prepareStatement(SQL_INSERT_PRODUCCION);
                 stmt.setInt(1, idPedido);
-                stmt.setString(2, estado);
+                stmt.setString(2, estadoProduccion);
                 stmt.setString(3, fecha);
             }
-            
+
             stmt.executeUpdate();
+            conn.commit();
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        } finally {
+            Conexion.close(stmt);
+            if (conexionTransaccional == null) {
+                Conexion.close(conn);
+            }
+
+        }
+    }
+
+    @Override
+    public void registrarProduccion(int idPedido, String estadoProduccion, String fecha, int cantidadAvance) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
+
+            //se registra el avance diario
+            stmt = conn.prepareStatement(SQL_INSERT_PRODUCCION_CANTIDADAVANZADA);
+            stmt.setInt(1, idPedido);
+            stmt.setString(2, estadoProduccion);
+            stmt.setString(3, fecha);
+            stmt.setInt(4, cantidadAvance);
+            stmt.executeUpdate();
+            
             conn.commit();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -309,4 +338,5 @@ public class ProduccionDaoJDBC implements ProduccionDao {
         }
         return pedidos;
     }
+
 }
