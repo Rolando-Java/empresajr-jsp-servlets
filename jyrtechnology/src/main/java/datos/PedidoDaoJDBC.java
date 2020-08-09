@@ -20,6 +20,9 @@ public class PedidoDaoJDBC implements PedidoDao {
     private static final String SQL_SELECT_PEDIDO_BY_ESTADOPEDIDO = "SELECT idusu ,idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
             + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado ,idusu HAVING estado = ? "
             + "ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
+    private static final String SQL_SELECT_PEDIDO_BY_IDPEDIDO = "SELECT coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
+            + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado , idusu HAVING idped = ? "
+            + "ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
     private static final String SQL_SELECT_DETALLEPEDIDO_BY_IDPEDIDO = "SELECT idpren ,tippren ,preuni ,subtot ,canpren "
             + "FROM vista_pedido_detallepedido_prenda WHERE idped = ? ORDER BY idpren ASC ";
     private static final String SQL_SELECT_PRENDA = "SELECT idpren ,tippren ,preuni FROM prendas ORDER BY idpren ASC";
@@ -304,6 +307,79 @@ public class PedidoDaoJDBC implements PedidoDao {
     }
 
     @Override
+    public Pedido listarPedido(int idPedido) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Pedido pedido = null;
+        Usuario usuario = null;
+        List<DetallePedido> detallePedidos = null;
+        DetallePedido detallePedido = null;
+        Prenda prenda = null;
+        FichaTecnica fichaTecnica = null;
+        List<Produccion> producciones = null;
+        try {
+            conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
+
+            //se obtiene el pedido por el id del pedido
+            stmt = conn.prepareStatement(SQL_SELECT_PEDIDO_BY_IDPEDIDO);
+            stmt.setInt(1, idPedido);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int idFichaTecnica = rs.getInt("idficha");
+                String fecha = rs.getString("fec");
+                String hora = rs.getString("hor");
+                String estado = rs.getString("estado");
+                int cantidadPrendasTotal = rs.getInt("cantPrendTotal");
+                BigDecimal total = rs.getBigDecimal("total");
+
+                fichaTecnica = new FichaTecnica(idFichaTecnica);
+                pedido = new Pedido(idPedido, usuario, fecha, hora, estado, cantidadPrendasTotal, total, fichaTecnica);
+            }
+
+            //Se obtiene el detalle del pedido
+            stmt = conn.prepareStatement(SQL_SELECT_DETALLEPEDIDO_BY_IDPEDIDO);
+            stmt.setInt(1, idPedido);
+            rs = stmt.executeQuery();
+            detallePedidos = new ArrayList<DetallePedido>();
+
+            while (rs.next()) {
+                int idPrenda = rs.getInt("idpren");
+                String tipoPrenda = rs.getString("tippren");
+                BigDecimal precioUnitario = rs.getBigDecimal("preuni");
+                BigDecimal subTotal = rs.getBigDecimal("subtot");
+                int cantidadPrendas = rs.getInt("canpren");
+
+                prenda = new Prenda(idPrenda, tipoPrenda, precioUnitario);
+                detallePedido = new DetallePedido(prenda, subTotal, cantidadPrendas);
+                detallePedidos.add(detallePedido);
+            }
+
+            pedido.setDetallePedidos(detallePedidos);
+
+            //Se obtiene la ficha tecnica del pedido
+            FichaTecnicaDao fichaTecnicaJDBC = new FichaTecnicaDaoJDBC(conn);
+            fichaTecnicaJDBC.generarFichaTecnica(pedido.getFichaTecnica());
+
+            //Obtener la produccion del pedido
+            ProduccionDao produccionJDBC = new ProduccionDaoJDBC(conn);
+            producciones = produccionJDBC.obtenerProduccion(idPedido);
+            pedido.setProducciones(producciones);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        } finally {
+            Conexion.close(rs);
+            Conexion.close(stmt);
+            if (conexionTransaccional == null) {
+                Conexion.close(conn);
+            }
+        }
+        return pedido;
+    }
+
+    @Override
     public List<Prenda> listarPrendas() {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -436,7 +512,7 @@ public class PedidoDaoJDBC implements PedidoDao {
         Correo correo = null;
         try {
             conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
-            
+
             //se obtiene los datos para el email segun el tipo de imagen
             stmt = conn.prepareStatement(SQL_SELECT_MENSAJERIA_BY_TIPOIMAGEN);
             stmt.setString(1, TipoImagen.SOLICITUD_PEDIDO.getTipo());
@@ -454,11 +530,10 @@ public class PedidoDaoJDBC implements PedidoDao {
             String subtitulo = TipoImagen.SOLICITUD_PEDIDO.getSubtitulo();
             String header = EmailGenerator.getHeaders(urlImagen);
             String[] registerMailTexts = new String[]{
-                "Estimado " + usuario.getApellidoPaterno().toUpperCase() + " " + usuario.getApellidoMaterno().toUpperCase() + ", " + usuario.getNombre().toUpperCase() ,
+                "Estimado " + usuario.getApellidoPaterno().toUpperCase() + " " + usuario.getApellidoMaterno().toUpperCase() + ", " + usuario.getNombre().toUpperCase(),
                 "-------------------------------------------",
                 mensaje,
-                "-------------------------------------------",
-            };
+                "-------------------------------------------",};
 
             String body = EmailGenerator.getBody(subtitulo, registerMailTexts);
 

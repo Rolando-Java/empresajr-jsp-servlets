@@ -250,15 +250,12 @@ public class PedidoServlet extends HttpServlet {
     }
 
     private void seguimientoDelPedido(HttpServletRequest request, HttpServletResponse response, HttpSession sesion) throws ServletException, IOException {
+        //se obtiene el pedido por el id del pedido
         int idPedido = Integer.parseInt(request.getParameter("idPedido"));
-        List<Pedido> pedidos = (List<Pedido>) sesion.getAttribute("pedidos");
-
-        for (Pedido pedido : pedidos) {
-            if (pedido.getIdPedido() == idPedido) {
-                sesion.setAttribute("pedido", pedido);
-                break;
-            }
-        }
+        
+        PedidoDao pedidoJDBC = new PedidoDaoJDBC();
+        Pedido pedido = pedidoJDBC.listarPedido(idPedido);
+        sesion.setAttribute("pedido", pedido);
     }
 
     private void listarPrendas(HttpServletRequest request, HttpServletResponse response, HttpSession sesion) throws ServletException, IOException {

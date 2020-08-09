@@ -11,6 +11,7 @@ public interface PedidoDao {
     List<Pedido> listarPedidos(int idUsuario);
     List<Pedido> listarPedidos(int idUsuario, String estadoPedido);
     List<Pedido> listarPedidos(String estadoPedido);
+    Pedido listarPedido(int idPedido);
     List<Prenda> listarPrendas();
     void registrarPedido(Pedido pedido);
     void modificarEstadoPedido(int idPedido, String estadoPedido);

@@ -243,7 +243,7 @@
                             <option <c:if test="${pedido.producciones.get(pedido.producciones.size()-1).estado.equalsIgnoreCase('produccionterminadaalmacen')}">selected</c:if> value="produccionterminadaalmacen">Producción terminada</option>
                         </select>
                     </td>
-                    <td><input type="date" id="${status.count}" placeholder="Seleccione la fecha" name="fecha" onchange="comparar('${status.count}')">
+                    <td><input type="date" id="${status.count}" placeholder="Seleccione la fecha" name="fecha" onchange="comparar('${status.count}')" >
                     </td>
                     <td><button class="btn btn-red rounded btn-sm" type="submit"><i class="fas fa-save"></i></button></td>
                 </tr>
