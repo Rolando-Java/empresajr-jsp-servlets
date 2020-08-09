@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -354,7 +355,7 @@ public class PedidoServlet extends HttpServlet {
         sesion.setAttribute("detallePedidoGeneral", pedido);
     }
 
-    private void registrarPedido(HttpServletRequest request, HttpServletResponse response, HttpSession sesion) throws ServletException, IOException {
+    private void registrarPedido(HttpServletRequest request, HttpServletResponse response, HttpSession sesion) throws ServletException, IOException, NullPointerException {
         Pedido pedido = (Pedido) sesion.getAttribute("detallePedidoGeneral");
 
         if (pedido != null) {
@@ -364,7 +365,34 @@ public class PedidoServlet extends HttpServlet {
 
             //se aniade le estado del pedido
             pedido.setEstado(EstadoPedido.EN_ESPERA.getEstado());
+
+            /*
+            se suma los subtototales y cantidad de pendas del detalle del pedido en caso
+            se repita la prenda
+             */
+            List<DetallePedido> detallePedidoListObtenido = pedido.getDetallePedidos().stream().map((t) -> {
+                return t.getPrenda().getIdPrenda();
+            }).distinct().map((t) -> {
+                //se obtiene el subtotal
+                double subTotal = pedido.getDetallePedidos().stream().filter((f) -> {
+                    return f.getPrenda().getIdPrenda() == t.intValue();
+                }).mapToDouble((d) -> d.getSubTotal().doubleValue()).sum();
+                //se obtiene la cantidad de prendas
+                int cantidadPrendas = pedido.getDetallePedidos().stream()
+                        .filter((f) -> f.getPrenda().getIdPrenda() == t.intValue())
+                        .mapToInt(DetallePedido::getCantidadPrendas).sum();
+                //se obtiene la prenda
+                Prenda prenda = pedido.getDetallePedidos().stream()
+                        .filter((f) -> f.getPrenda().getIdPrenda() == t.intValue())
+                        .map(DetallePedido::getPrenda).findFirst()
+                        .orElseThrow(() -> new NullPointerException());
+                return new DetallePedido(prenda, BigDecimal.valueOf(subTotal), cantidadPrendas);
+            }).sorted((x, y) -> Integer.valueOf(x.getPrenda().getIdPrenda()) 
+                .compareTo(Integer.valueOf(y.getPrenda().getIdPrenda())))
+                .collect(Collectors.toList());
             
+            pedido.setDetallePedidos(detallePedidoListObtenido);
+
             //se registra el pedido
             PedidoDao pedidoJDBC = new PedidoDaoJDBC();
             pedidoJDBC.registrarPedido(pedido);

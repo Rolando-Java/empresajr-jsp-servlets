@@ -9,7 +9,8 @@ public enum PaginaJSP {
     SOLICITUD_PEDIDOS("solicituddepedidos.jsp"),
     REGISTRAR_FICHATECNICA("registrodefichatecnica.jsp"),
     REGISTRAR_PEDIDO("registrodepedido.jsp"),
-    SEGUIMIENTO_PEDIDO("seguimientodepedidos.jsp");
+    SEGUIMIENTO_PEDIDO("seguimientodepedidos.jsp"),
+    ESTABLECER_FECHA_PRODUCCION("establecerfechadeproduccion.jsp");
 
     private final String pagina;
 

@@ -1,13 +1,13 @@
 package datos;
 
 import constantes.EstadoProduccion;
+import constantes.TipoImagen;
 import dominio.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.Conexion;
+import util.EmailGenerator;
 
 public class PedidoDaoJDBC implements PedidoDao {
 
@@ -15,15 +15,18 @@ public class PedidoDaoJDBC implements PedidoDao {
 
     private static final String SQL_SELECT_PEDIDO_BY_IDUSUARO = "SELECT idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
             + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado ,idusu HAVING idusu = ? ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
-    private static final String SQL_SELECT_PEDIDO_BY_ESTADO_IDUSUARIO = "SELECT idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
+    private static final String SQL_SELECT_PEDIDO_BY_ESTADOPEDIDO_IDUSUARIO = "SELECT idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
             + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado , idusu HAVING estado = ? and idusu = ? ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
-    private static final String SQL_SELECT_PEDIDO = "SELECT idusu ,idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
-            + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado ,idusu ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
+    private static final String SQL_SELECT_PEDIDO_BY_ESTADOPEDIDO = "SELECT idusu ,idped ,coalesce (idft,0) as idficha,SUM(subtot) AS total ,SUM(canpren) as cantPrendTotal,fec ,hor ,estado "
+            + "FROM vista_pedido_detallepedido GROUP BY idped, idft ,fec ,hor ,estado ,idusu HAVING estado = ? "
+            + "ORDER BY TO_DATE(fec ,'DD-MM-YYYY') ASC, CAST(hor as time) ASC";
     private static final String SQL_SELECT_DETALLEPEDIDO_BY_IDPEDIDO = "SELECT idpren ,tippren ,preuni ,subtot ,canpren "
             + "FROM vista_pedido_detallepedido_prenda WHERE idped = ? ORDER BY idpren ASC ";
     private static final String SQL_SELECT_PRENDA = "SELECT idpren ,tippren ,preuni FROM prendas ORDER BY idpren ASC";
+    private static final String SQL_SELECT_MENSAJERIA_BY_TIPOIMAGEN = "SELECT correoempresa , contrasenia ,url FROM vista_mensajeria WHERE tipoimagen = ?";
     private static final String SQL_INSERT_PEDIDO = "INSERT INTO pedido(idusu ,fec ,hor ,estado ) VALUES(?,?,?,?) RETURNING idped";
     private static final String SQL_INSERT_DETALLE_PEDIDO = "INSERT INTO detallepedido(idped ,idpren ,subtot ,canpren ) VALUES(?,?,?,?)";
+    private static final String SQL_UPDATE_ESTADO_PEDIDO = "UPDATE pedido SET estado = ? WHERE idped = ?";
 
     public PedidoDaoJDBC() {
 
@@ -140,7 +143,7 @@ public class PedidoDaoJDBC implements PedidoDao {
             UsuarioDao usuarioJDBC = new UsuarioDaoJDBC(conn);
             usuario = usuarioJDBC.listarUsuarios(idUsuario);
 
-            stmt = conn.prepareStatement(SQL_SELECT_PEDIDO_BY_ESTADO_IDUSUARIO);
+            stmt = conn.prepareStatement(SQL_SELECT_PEDIDO_BY_ESTADOPEDIDO_IDUSUARIO);
             stmt.setString(1, estadoPedido);
             stmt.setInt(2, idUsuario);
             rs = stmt.executeQuery();
@@ -210,7 +213,7 @@ public class PedidoDaoJDBC implements PedidoDao {
     }
 
     @Override
-    public List<Pedido> listarPedidos() {
+    public List<Pedido> listarPedidos(String estadoPedido) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -225,7 +228,10 @@ public class PedidoDaoJDBC implements PedidoDao {
         try {
             conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
 
-            stmt = conn.prepareStatement(SQL_SELECT_PEDIDO);
+            //se obtiene los pedidos segun el estado del pedido
+            stmt = conn.prepareStatement(SQL_SELECT_PEDIDO_BY_ESTADOPEDIDO);
+            stmt.setString(1, estadoPedido);
+
             rs = stmt.executeQuery();
             pedidos = new ArrayList<Pedido>();
             UsuarioDao usuarioJDBC = new UsuarioDaoJDBC(conn);
@@ -390,6 +396,84 @@ public class PedidoDaoJDBC implements PedidoDao {
                 Conexion.close(conn);
             }
         }
+    }
+
+    @Override
+    public void modificarEstadoPedido(int idPedido, String estadoPedido) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
+
+            //se modifica el estado del pedido
+            stmt = conn.prepareStatement(SQL_UPDATE_ESTADO_PEDIDO);
+            stmt.setString(1, estadoPedido);
+            stmt.setInt(2, idPedido);
+            stmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+            try {
+                conn.rollback();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace(System.out);
+            }
+        } finally {
+            Conexion.close(stmt);
+            if (conexionTransaccional == null) {
+                Conexion.close(conn);
+            }
+        }
+    }
+
+    @Override
+    public Correo generarEmailSolicitudPedido(Usuario usuario, String mensaje) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Correo correo = null;
+        try {
+            conn = (conexionTransaccional != null) ? this.conexionTransaccional : Conexion.getConnection();
+            
+            //se obtiene los datos para el email segun el tipo de imagen
+            stmt = conn.prepareStatement(SQL_SELECT_MENSAJERIA_BY_TIPOIMAGEN);
+            stmt.setString(1, TipoImagen.SOLICITUD_PEDIDO.getTipo());
+            rs = stmt.executeQuery();
+            String correoEmpresa = "";
+            String contraseniaEmpresa = "";
+            String urlImagen = "";
+
+            if (rs.next()) {
+                correoEmpresa = rs.getString("correoempresa");
+                contraseniaEmpresa = rs.getString("contrasenia");
+                urlImagen = rs.getString("url");
+            }
+
+            String subtitulo = TipoImagen.SOLICITUD_PEDIDO.getSubtitulo();
+            String header = EmailGenerator.getHeaders(urlImagen);
+            String[] registerMailTexts = new String[]{
+                "Estimado " + usuario.getApellidoPaterno().toUpperCase() + " " + usuario.getApellidoMaterno().toUpperCase() + ", " + usuario.getNombre().toUpperCase() ,
+                "-------------------------------------------",
+                mensaje,
+                "-------------------------------------------",
+            };
+
+            String body = EmailGenerator.getBody(subtitulo, registerMailTexts);
+
+            correo = new Correo(correoEmpresa, contraseniaEmpresa, usuario.getCorreo(), urlImagen, header, subtitulo, body);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        } finally {
+            Conexion.close(rs);
+            Conexion.close(stmt);
+            if (conexionTransaccional == null) {
+                Conexion.close(conn);
+            }
+        }
+        return correo;
     }
 
 }

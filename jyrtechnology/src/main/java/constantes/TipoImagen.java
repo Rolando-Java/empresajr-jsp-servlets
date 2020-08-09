@@ -3,7 +3,7 @@ package constantes;
 public enum TipoImagen {
     
     REGISTRO("registro","Registro en J&R"),
-    PEDIDO("pedido","Solicitud de pedidos en J&R");
+    SOLICITUD_PEDIDO("pedido","Solicitud de pedidos en J&R");
     
     private final String tipo;
     private final String subtitulo;
